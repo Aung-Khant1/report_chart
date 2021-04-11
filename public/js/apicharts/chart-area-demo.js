@@ -9,7 +9,7 @@ var myLineChart = new Chart(ctx, {
     data: {
         labels: dailyreportdatedata,
         datasets: [{
-                label: "Telenor Direct",
+                label: "Telenor And Other API(s) ",
                 lineTension: 0.3,
                 backgroundColor: "rgba(0,0,0,0)",
                 borderColor: "rgba(2,117,216,1)",
@@ -23,7 +23,7 @@ var myLineChart = new Chart(ctx, {
                 data: dailyreporttelenordirectdata,
             },
             {
-                label: "Other API(s)",
+                label: "MPT ",
                 lineTension: 0.3,
                 backgroundColor: "rgba(0,0,0,0)",
                 borderColor: "rgba(2,17,116,1)",
@@ -54,7 +54,7 @@ var myLineChart = new Chart(ctx, {
             yAxes: [{
                 ticks: {
                     min: 0,
-                    max: 15000,
+                    max: 20000,
                     maxTicksLimit: 6
                 },
                 gridLines: {
@@ -63,7 +63,8 @@ var myLineChart = new Chart(ctx, {
             }],
         },
         legend: {
-            display: false
+            display: true,
+            position: 'bottom'
         }
     }
 });

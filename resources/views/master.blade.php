@@ -9,6 +9,9 @@
         <title> Report Dashboard </title>
         <link href="{{asset('assets/css/styles.css')}}" rel="stylesheet" />
         <link href="https://cdn.datatables.net/1.10.20/css/dataTables.bootstrap4.min.css" rel="stylesheet" crossorigin="anonymous" />
+        <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/jquery.dataTables.css">
+        <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.7.0/css/buttons.dataTables.min.css">
+        @yield('css')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/js/all.min.js" crossorigin="anonymous"></script>
     </head>
     <body class="sb-nav-fixed">
@@ -47,21 +50,38 @@
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                 Dashboard
                             </a> --}}
+                            
                             <div class="sb-sidenav-menu-heading">Dashboard</div>
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                            <a class="nav-link" href="{{url('/')}}"> SMS API </a>
+
+                            {{-- <a class="nav-link collapsed" href="{{url('/')}}" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                     SMS API
-                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
-                            </a>
-                            <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                {{-- <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                            </a> --}}
+                            {{-- <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="layout-static.html">Charts</a>
                                     <a class="nav-link" href="layout-sidenav-light.html">Tables</a>
                                     <a class="nav-link" href="layout-sidenav-light.html">Download By Collections</a>
                                 </nav>
-                            </div>
+                            </div> --}}
+                            <a class="nav-link" href="{{url('smstitleoperators')}}"> SMS Title Operators </a>
 
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts1" aria-expanded="false" aria-controls="collapseLayouts">
+                            {{-- <a class="nav-link collapsed" href="{{url('smstitleoperators')}}" data-toggle="collapse" data-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                    SMS Title Operators
+                                {{-- <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div> 
+                            </a> --}}
+                            {{-- <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-parent="#sidenavAccordion">
+                                <nav class="sb-sidenav-menu-nested nav">
+                                    <a class="nav-link" href="layout-static.html">Charts</a>
+                                    <a class="nav-link" href="layout-sidenav-light.html">Tables</a>
+                                    <a class="nav-link" href="layout-sidenav-light.html">Download By Collections</a>
+                                </nav>
+                            </div> --}}
+
+                            {{-- <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts1" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                     Holdername
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -72,9 +92,9 @@
                                     <a class="nav-link" href="layout-sidenav-light.html">Tables</a>
                                     <a class="nav-link" href="layout-sidenav-light.html">Download By Collections</a>
                                 </nav>
-                            </div>
+                            </div> --}}
 
-                            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts">
+                            {{-- <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapseLayouts2" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
                                     Holdername by operator
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
@@ -85,7 +105,7 @@
                                     <a class="nav-link" href="layout-sidenav-light.html">Tables</a>
                                     <a class="nav-link" href="layout-sidenav-light.html">Download By Collections</a>
                                 </nav>
-                            </div>
+                            </div> --}}
                             
                            
                         </div>
@@ -105,17 +125,23 @@
                 
             </div>
         </div>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
         <script src="{{asset('js/app.js')}}"></script>
-        {{-- <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script> --}}
         <script src="{{asset('assets/js/scripts.js')}}"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.min.js" crossorigin="anonymous"></script>
-        {{-- <script src="{{asset('assets/assets/demo/chart-area-demo.js')}}"></script> --}}
+
+        {{-- dataTable Scripts start --}}
+
+        <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.0/js/dataTables.buttons.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.html5.min.js"></script>
+        <script src="https://cdn.datatables.net/buttons/1.7.0/js/buttons.print.min.js"></script>
+
+        {{-- dataTable Scripts end --}}
         
-        <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js" crossorigin="anonymous"></script>
-        <script src="https://cdn.datatables.net/1.10.20/js/dataTables.bootstrap4.min.js" crossorigin="anonymous"></script>
-        <script src="{{asset('assets/assets/demo/datatables-demo.js')}}"></script>
-        {{-- <script src="{{asset('assets/js/colors.js')}}"></script> --}}
         @yield('js')
 
     </body>

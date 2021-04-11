@@ -8,10 +8,10 @@ var ctx = document.getElementById("myPieChart");
 var myPieChart = new Chart(ctx, {
     type: 'pie',
     data: {
-        labels: [yesterday.label[0], yesterday.label[1]],
+        labels: [`MPT (${yesterday.data[0]})`,`Telenor And Other API(s) (${yesterday.data[1]})`],
         datasets: [{
             data: [yesterday.data[0], yesterday.data[1]],
-            backgroundColor: ['#dc3545', '#007bff'],
+            backgroundColor: ['rgba(22,117,124,1)', 'rgba(12,212,216,1)'],
         }],
     },
     options: {

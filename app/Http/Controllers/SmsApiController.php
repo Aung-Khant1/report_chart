@@ -6,6 +6,9 @@ use App\Models\SmsApi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Exports\smsapi\YearlyReport;
+use App\Exports\smsapi\YearlySearchReport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SmsApiController extends Controller
 {
@@ -24,7 +27,7 @@ class SmsApiController extends Controller
         $yesterdaydata = [];
         foreach ($yesterdayraw as $key => $value) {
             array_push($yesterdaylabel,$value->sms_api);
-            array_push($yesterdaydata,$value->mobile_terminal_count);
+            array_push($yesterdaydata,$value->sms_count);
         }
         
         $yesterday = new SmsApi();
@@ -36,7 +39,7 @@ class SmsApiController extends Controller
        // start yearly report
         $thisyears = (int)Carbon::now()->format('Y');
         $thisyearraw = DB::table('report_by_sms_apis')
-                        ->select(DB::raw("sum(mobile_terminal_count) as total, sms_api"))
+                        ->select(DB::raw("sum(sms_count) as total, sms_api"))
                         ->whereBetween('counted_date',[$thisyears."-01-01",$thisyears."-12-31"])
                         ->groupBy('sms_api')
                         ->get();
@@ -51,7 +54,7 @@ class SmsApiController extends Controller
         $thisyear = new SmsApi();
         $thisyear->label = $thisyearlabel;
         $thisyear->data = $thisyeardata;
-
+        // dd($thisyear);
         
        //end yearly report
 
@@ -59,7 +62,7 @@ class SmsApiController extends Controller
     
         $thisyearstartdate = $thisyears.'-01-01';
         $thisyearenddate = $thisyears.'-12-31';
-        $monthlyraw = DB::select(DB::raw("select month(counted_date) as counted_date,sms_api,sum(mobile_terminal_count) as total from report_by_sms_apis where counted_date between '".$thisyearstartdate."' and '".$thisyearenddate."' group by month(counted_date), sms_api"));
+        $monthlyraw = DB::select(DB::raw("select month(counted_date) as counted_date,sms_api,sum(sms_count) as total from report_by_sms_apis where counted_date between '".$thisyearstartdate."' and '".$thisyearenddate."' group by month(counted_date), sms_api"));
         
         $monthlyreportpermonthtelenordirect = [];
         $monthlyreportpermonthotherapis = [];
@@ -76,6 +79,7 @@ class SmsApiController extends Controller
             }
             
         }
+
         // dd($monthlyreportpermonthotherapislabel);
          // end monthly report
 
@@ -104,7 +108,7 @@ class SmsApiController extends Controller
    {
        
        $searchyear = DB::table('report_by_sms_apis')
-                        ->select(DB::raw("sum(mobile_terminal_count) as total, sms_api"))
+                        ->select(DB::raw("sum(sms_count) as total, sms_api"))
                         ->whereBetween('counted_date',[$request->searchdate."-01-01",$request->searchdate."-12-31"])
                         ->groupBy('sms_api')
                         ->get();
@@ -123,7 +127,7 @@ class SmsApiController extends Controller
         // monthly start
         $searchthisyearstartdate = $request->searchdate.'-01-01';
         $searchthisyearenddate = $request->searchdate.'-12-31';
-        $searchmonthlyraw = DB::select(DB::raw("select month(counted_date) as counted_date,sms_api,sum(mobile_terminal_count) as total from report_by_sms_apis where counted_date between '".$searchthisyearstartdate."' and '".$searchthisyearenddate."' group by month(counted_date), sms_api"));
+        $searchmonthlyraw = DB::select(DB::raw("select month(counted_date) as counted_date,sms_api,sum(sms_count) as total from report_by_sms_apis where counted_date between '".$searchthisyearstartdate."' and '".$searchthisyearenddate."' group by month(counted_date), sms_api"));
         
         $searchmonthlyreportpermonthtelenordirect = [];
         $searchmonthlyreportpermonthotherapis = [];
@@ -151,39 +155,58 @@ class SmsApiController extends Controller
 
         return $searchthisyear;
    }
-    
-    
-//    public function msearch(Request $request)
-//    {
-//     $searchthisyearstartdate = $request->msdate1;
-//     $searchthisyearenddate = $request->msdate2;
 
-//     $searchmonthlyraw = DB::select(DB::raw("select month(counted_date) as counted_date,sms_api,sum(mobile_terminal_count) as total from report_by_sms_apis where counted_date between '".$searchthisyearstartdate."' and '".$searchthisyearenddate."' group by month(counted_date), sms_api"));
+
+    public function dsearch(Request $request)
+    {
+        $searchfordailyreportraw = DB::table('report_by_sms_apis')
+                            ->whereBetween('counted_date',[$request->fromdate,$request->todate])
+                            ->get();
+        $searchdailyreporttelenordirect = [];
+        $searchdailyreportotherapi = [];
+        foreach ($searchfordailyreportraw as $key => $value) {
+            if ($key%2) {
+                array_push($searchdailyreporttelenordirect,$value);
+            }else{
+                array_push($searchdailyreportotherapi,$value);
+            }
+        }
+        $searchdailyreport = new SmsApi();
+        $searchdailyreport->telenor = $searchdailyreporttelenordirect;
+        $searchdailyreport->other = $searchdailyreportotherapi;
+
+        return $searchdailyreport;
+    }
     
-//     $searchmonthlyreportpermonthtelenordirect = [];
-//     $searchmonthlyreportpermonthotherapis = [];
-//     $searchmonthlyreportpermonthotherapislabel = [];
-    
-//     foreach ($searchmonthlyraw as $key => $value) {
-//         if ($key%2) {
-//             array_push($searchmonthlyreportpermonthtelenordirect,$value);
-//             $dateObj   = Carbon::createFromFormat('!m', $value->counted_date);
-//             $monthName = $dateObj->format('F');
-//             array_push($searchmonthlyreportpermonthotherapislabel,$monthName);
-//         }else{
-//             array_push($searchmonthlyreportpermonthotherapis,$value);
-//         }
+    public function yearlyreportexport()
+    {
+        $dt = Carbon::now();
+        $filename =$dt->toDateString().'_Yearly_Report.xlsx';
+        return Excel::download(new YearlyReport, $filename);
+    }
+
+    public function yearlysearchreportexport(Request $request)
+    {
         
-//     }
+        $searchyeardate = [$request->yearsearchdownload];
+        // $searchyearreport = DB::table('report_by_sms_apis')
+        //                 ->select(DB::raw("sum(sms_count) as total, sms_api"))
+        //                 ->whereBetween('counted_date',[$searchyeardate."-01-01",$searchyeardate."-12-31"])
+        //                 ->groupBy('sms_api')
+        //                 ->get();
+       
 
-//     $searchmonthlyreport = new SmsApi();
-//     $searchmonthlyreport->lables = $searchmonthlyreportpermonthotherapislabel;
-//     $searchmonthlyreport->telenordirect = $searchmonthlyreportpermonthtelenordirect;
-//     $searchmonthlyreport->otherapi = $searchmonthlyreportpermonthotherapis;
-//     return $searchmonthlyreport;
+        // $result = [["Other API(s)",$searchyearreport[0]->total],["Telenor Direct", $searchyearreport[1]->total]];
 
-//    }
-    
-    
-    
+        // $yearlysearchexport = new YearlySearchReport($searchyeardate);
+
+        $dt = Carbon::now();
+        $filename =$dt->toDateString().'_Yearly_Report.xlsx';
+        return Excel::download(new YearlySearchReport($searchyeardate), $filename);
+            // return $searchyeardate;          
+        
+        
+        
+    }
+
 }

@@ -3,6 +3,8 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SmsApiController;
+use App\Http\Controllers\SmstitleoperatorsController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -15,4 +17,8 @@ use App\Http\Controllers\SmsApiController;
 |
 */
 Route::post('ysearch',[SmsApiController::class,'ysearch']);
-Route::post('msearch',[SmsApiController::class,'msearch']);
+Route::post('dsearch',[SmsApiController::class,'dsearch']);
+Route::get('yearlyreportexport', [SmsApiController::class, 'yearlyreportexport']);
+Route::get('yearlysearchreportexport', [SmsApiController::class, 'yearlysearchreportexport']);
+
+Route::get('smstitleoperatorsrefresh', [SmstitleoperatorsController::class, 'smstitleoperatorsrefresh']);

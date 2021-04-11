@@ -8,10 +8,10 @@ var ctx = document.getElementById("myDonutChart");
 var myDonutChart = new Chart(ctx, {
     type: 'doughnut',
     data: {
-        labels: thisyearlabels,
+        labels: [`MPT (${thisyeardatas[0]})`,`Telenor And Other API(s) (${thisyeardatas[1]})`],
         datasets: [{
             data: thisyeardatas,
-            backgroundColor: ['#dc3545', '#007bff'],
+            backgroundColor: ['rgba(22,117,124,1)', 'rgba(12,212,216,1)'],
         }],
     },
     options: {

@@ -9,13 +9,13 @@ var myBarChart = new Chart(ctx, {
     data: {
         labels: monthlyreportpermonthotherapislabel,
         datasets: [{
-                label: "Telenor Direct",
+                label: "Telenor And Other API(s)",
                 backgroundColor: "rgba(22,117,124,1)",
                 borderColor: "rgba(2,117,216,1)",
                 data: monthlyreportpermonthtelenordirectdata,
             },
             {
-                label: "Other API(s)",
+                label: "MPT",
                 backgroundColor: "rgba(12,212,216,1)",
                 borderColor: "rgba(2,117,216,1)",
                 data: monthlyreportpermonthotherapisdata,
@@ -25,9 +25,6 @@ var myBarChart = new Chart(ctx, {
     options: {
         scales: {
             xAxes: [{
-                time: {
-                    unit: 'month'
-                },
                 gridLines: {
                     display: false
                 },

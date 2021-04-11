@@ -34,20 +34,18 @@
                     <div class="form-group col-md-12 my-4">
                         <div class="row col-md-12 mb-3">
                             <label for="fromdate" class="col-md-3">From :</label>
-                            <input type="date" name="" id="fromdate" class="col-md-8 form-control">
+                            <input type="date" name="" id="fromdate" class="col-md-8 form-control fromdate">
                         </div>
                         <div class="row col-md-12">
                             <label for="todate" class="col-md-3">To :</label>
-                            <input type="date" name="" id="todate" class="col-md-8 form-control">
+                            <input type="date" name="" id="todate" class="col-md-8 form-control todate">
                         </div>
                     </div>
                     <div class="offset-md-3 mb-3">
-                        <button class="btn btn-primary btn-sm mr-2">Search</button>
+                        <button class="btn btn-primary btn-sm mr-2" onclick="dssearchwork()">Search</button>
                         <button class="btn btn-success btn-sm">Download</button>
                     </div>
                 </div>
-
-               
 
                 <div id="yearsearch">
                     <div class="form-group col-md-12 my-4">
@@ -58,7 +56,7 @@
                         
                     </div>
                     <div class="offset-md-3 mb-3">
-                        <button class="btn btn-primary btn-sm mr-2" onclick="yssearchwork()">Search</button>
+                        <button class="btn btn-primary btn-sm mr-2 scrolleff1" onclick="yssearchwork()">Search</button>
                         <button class="btn btn-success btn-sm">Download</button>
                     </div>
                 </div>
@@ -76,12 +74,13 @@
                 </div>
                 <div class="col-md-6" style="border-right: 2px solid #eee;">
                     
-                    <div class="card-header mb-3">
+                    <div class="card-header mb-3 row">
+                        <div class="col-md-6"><h4 class="scrolleffto1"><i class="fas fa-chart-pie mr-1"></i>Yearly</h4></div>
+                        {{-- <a href="{{url('yearlyreport')}}" class="btn btn-primary btn-small">Download</a> --}}
+                        <button class="offset-md-3 col-md-3 btn btn-primary btn-sm" onclick="ysdownload()">Download</button>
                         
-                        <h4><i class="fas fa-chart-pie mr-1"></i>Yearly</h4>
                     </div>
                     <canvas id="myDonutChart" width="100%" height="50"></canvas>
-                       
                 </div>
             </div>
             
@@ -114,24 +113,16 @@
         
         $(document).ready(function () {
             $('#datesearch').show();
-            $('#monthsearch').hide();
             $('#yearsearch').hide();
             $('#flexRadioDefault1').click(function (e) { 
                 
                 $('#datesearch').toggle();
-                $('#monthsearch').hide();
                 $('#yearsearch').hide();
             });
-            $('#flexRadioDefault3').click(function (e) { 
-               
-                $('#datesearch').hide();
-                $('#monthsearch').toggle();
-                $('#yearsearch').hide();
-            });
+            
             $('#flexRadioDefault4').click(function (e) { 
                 
                 $('#datesearch').hide();
-                $('#monthsearch').hide();
                 $('#yearsearch').toggle();
             });
         });  
@@ -166,8 +157,8 @@
         var dailyreporttelenordirectdata = [];
         var dailyreportotherapidata = [];
         dailyreporttelenordirect.forEach((v,i) => {
-            dailyreporttelenordirectdata.push(dailyreporttelenordirect[i].mobile_terminal_count);
-            dailyreportotherapidata.push(dailyreportotherapi[i].mobile_terminal_count);
+            dailyreporttelenordirectdata.push(dailyreporttelenordirect[i].sms_count);
+            dailyreportotherapidata.push(dailyreportotherapi[i].sms_count);
             dailyreportdatedata.push(dailyreporttelenordirect[i].counted_date)
         });
         // console.log(dailyreporttelenordirectdata,dailyreportotherapidata)
@@ -216,12 +207,87 @@
                             
                             myBarChart.data.labels = this.monthlyreportpermonthotherapislabel;
                             myBarChart.update();
-                            console.log(monthlytelenordirectdata);
+                            // console.log(monthlytelenordirectdata);
+                            
                         }
 
                     })
 
+            }else{
+                alert('Invalid Date!')
             }
         }
+
+        var ysdownload = function () { 
+            var yearsearchdownload = document.querySelector(".ysdatework").value;
+            
+            if (yearsearchdownload != "" && yearsearchdownload > '2019') {
+                // get search value and find in db and use axios
+                axios.get('/api/yearlysearchreportexport',{params: {yearsearchdownload: yearsearchdownload }})
+                .then(({data}) => {
+                    const yearsearchexportlink = document.createElement('a');
+                    yearsearchexportlink.href = '/api/yearlysearchreportexport';
+
+                    document.body.appendChild(yearsearchexportlink);
+                    yearsearchexportlink.click();
+                    yearsearchexportlink.remove();
+                    console.log(data)
+                })
+                
+            } else if (yearsearchdownload == "" || yearsearchdownload > '2019'){
+                axios.get('/api/yearlyreportexport')
+                .then(({ data }) => {
+                    const link = document.createElement('a');
+                    link.href = '/api/yearlyreportexport';
+                    document.body.appendChild(link);
+                    link.click();
+                    link.remove();
+                });
+            }else{
+                alert('There is no any data you can download!')
+            }
+         }
+
+        function dssearchwork() {
+            //Get the text in the elements
+            var fromdate = document.querySelector('.fromdate').value;
+            var todate = document.querySelector('.todate').value;
+           
+            if (fromdate < todate) {
+                return axios.post('/api/dsearch',{
+                    fromdate : fromdate,
+                    todate : todate
+                }).then(response => {
+                        console.log(response.data)
+                        var dailysearchresultdatedata = [];
+                        var dailysearchresulttelenordata = [];
+                        var dailysearchresultotherapidata = [];
+                        response.data.telenor.forEach((v,i) => {
+                            dailysearchresulttelenordata.push(response.data.telenor[i].sms_count);
+                            dailysearchresultotherapidata.push(response.data.other[i].sms_count);
+                            dailysearchresultdatedata.push(response.data.telenor[i].counted_date);
+                            
+                        });
+                        this.dailyreporttelenordirectdata = dailysearchresulttelenordata;
+                        this.dailyreportotherapidata = dailysearchresultotherapidata;
+                        this.dailyreportdatedata = dailysearchresultdatedata;
+                        myLineChart.data.datasets[0].data = this.dailyreporttelenordirectdata;
+                        myLineChart.data.datasets[1].data = this.dailyreportotherapidata;
+                        myLineChart.data.labels = this.dailyreportdatedata;
+                        myLineChart.update();
+                    })
+            }else{
+                alert("Invalid date!")
+            }
+        }
+
+        
+        $(document).ready(function () {
+            $(".scrolleff1").click(function (){
+                $('html, body').animate({
+                    scrollTop: $(".scrolleffto1").offset().top
+                }, 3000);
+            });
+        });
     </script>
 @endsection

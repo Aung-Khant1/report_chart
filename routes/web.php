@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SmsApiController;
+use App\Http\Controllers\SmstitleoperatorsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,4 +19,6 @@ use App\Http\Controllers\SmsApiController;
 //     return view('smsapis.chart');
 // });
 
-Route::get('smsapi', [SmsApiController::class, 'index']);
+Route::get('/', [SmsApiController::class, 'index']);
+Route::get('smstitleoperators', [SmstitleoperatorsController::class, 'index']);
+
